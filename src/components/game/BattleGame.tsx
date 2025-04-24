@@ -196,7 +196,9 @@ const BattleGame: React.FC<BattleGameProps> = ({ playerDeck }) => {
     if (winner === "player") {
       recordWin(connection, wallet);
     }
-  }, [winner, connection, wallet, recordWin]);
+    // recordWin is an outer scope function and doesn't need to be in the dependency array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [winner, connection, wallet]);
 
   // Opponent plays automatically after player ends turn
   useEffect(() => {
