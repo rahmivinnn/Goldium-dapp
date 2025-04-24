@@ -202,70 +202,46 @@ const GalleryDetailPage: NextPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* NFT Image */}
               <div className="lg:col-span-1">
-                <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-in">
-                  <div className="relative group">
-                    <figure className="px-6 pt-6 overflow-hidden">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-goldium-400 to-goldium-600 rounded-xl blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
-                      <img
-                        src={nft.imageUrl || "/images/placeholder-nft.png"}
-                        alt={nft.name}
-                        className="rounded-xl w-full object-cover egg-float shadow-lg transform transition-transform duration-500 group-hover:scale-105"
-                        onError={(e) => { e.currentTarget.src = "/images/placeholder-nft.png"; }}
-                        loading="lazy"
-                      />
-                      <div className="absolute top-8 right-8 z-10">
-                        <span className={`badge ${
-                          nft.rarity === "Legendary" ? "badge-secondary" :
-                          nft.rarity === "Epic" ? "badge-primary" :
-                          nft.rarity === "Rare" ? "badge-info" :
-                          nft.rarity === "Uncommon" ? "badge-success" :
-                          "badge-ghost"
-                        } shadow-lg`}>
-                          {nft.rarity}
-                        </span>
-                      </div>
-                    </figure>
-                  </div>
-
+                <div className="card bg-base-100 shadow-xl">
+                  <figure className="px-6 pt-6">
+                    <img
+                      src={nft.imageUrl || "/images/placeholder-nft.png"}
+                      alt={nft.name}
+                      className="rounded-xl w-full object-cover egg-bounce"
+                      onError={(e) => { e.currentTarget.src = "/images/placeholder-nft.png"; }}
+                      loading="lazy"
+                    />
+                  </figure>
                   <div className="card-body">
-                    <div className="flex justify-center gap-4 mb-2">
-                      <button
-                        className="btn btn-circle btn-sm btn-ghost tooltip"
-                        data-tip="View Full Size"
-                        onClick={() => window.open(nft.imageUrl || "/images/placeholder-nft.png", "_blank")}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </button>
-                      <button
-                        className="btn btn-circle btn-sm btn-ghost tooltip"
-                        data-tip="Share"
-                        onClick={shareNft}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                        </svg>
-                      </button>
-                      <button
-                        className="btn btn-circle btn-sm btn-ghost tooltip"
-                        data-tip="Add to Favorites"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                      </button>
+                    <div className="flex justify-between items-center">
+                      <span className={`badge ${
+                        nft.rarity === "Legendary" ? "badge-secondary" :
+                        nft.rarity === "Epic" ? "badge-primary" :
+                        nft.rarity === "Rare" ? "badge-info" :
+                        nft.rarity === "Uncommon" ? "badge-success" :
+                        "badge-ghost"
+                      }`}>
+                        {nft.rarity}
+                      </span>
+
+                      <div className="flex gap-2">
+                        <button
+                          className="btn btn-circle btn-ghost btn-sm"
+                          onClick={shareNft}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
 
                     <div className="card-actions justify-end mt-4">
                       {connected && (
                         <button
-                          className="btn btn-goldium btn-3d btn-block gap-2 transform transition-transform duration-200 hover:scale-105 active:scale-95"
+                          className="btn btn-primary btn-block"
                           onClick={handleListForSale}
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
                           List for Sale
                         </button>
                       )}
@@ -274,53 +250,18 @@ const GalleryDetailPage: NextPage = () => {
                 </div>
 
                 {/* Owner Info */}
-                <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 mt-6 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                <div className="card bg-base-100 shadow-xl mt-6">
                   <div className="card-body">
-                    <h2 className="card-title flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                      Owner
-                    </h2>
+                    <h2 className="card-title">Owner</h2>
 
-                    <div className="bg-base-200 p-3 rounded-lg mt-2">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Address:</span>
-                        <div className="flex items-center">
-                          <span className="font-mono">{truncateAddress(nft.owner)}</span>
-                          <button
-                            className="btn btn-xs btn-circle btn-ghost ml-1 tooltip"
-                            data-tip="Copy Address"
-                            onClick={() => {
-                              navigator.clipboard.writeText(nft.owner);
-                              // Show toast notification
-                            }}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="flex justify-between items-center mt-2 text-sm">
-                        <span>Mint Date:</span>
-                        <span className="badge badge-ghost">{formatDate(nft.mintDate)}</span>
-                      </div>
-
-                      <div className="flex justify-between items-center mt-2 text-sm">
-                        <span>Ownership Duration:</span>
-                        <span className="badge badge-primary">3 months, 12 days</span>
-                      </div>
+                    <div className="flex justify-between items-center mt-2">
+                      <span>Address:</span>
+                      <span>{truncateAddress(nft.owner)}</span>
                     </div>
 
-                    <div className="card-actions justify-end mt-4">
-                      <button className="btn btn-sm btn-outline gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        View Profile
-                      </button>
+                    <div className="flex justify-between items-center text-sm opacity-70">
+                      <span>Mint Date:</span>
+                      <span>{formatDate(nft.mintDate)}</span>
                     </div>
                   </div>
                 </div>
@@ -331,69 +272,29 @@ const GalleryDetailPage: NextPage = () => {
                 <div className="card bg-base-100 shadow-xl mb-6">
                   <div className="card-body">
                     {/* Tabs */}
-                    <div className="tabs tabs-boxed mb-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                    <div className="tabs tabs-boxed mb-4">
                       <a
-                        className={`tab gap-2 transition-all duration-200 ${activeTab === 'details' ? 'tab-active' : ''}`}
+                        className={`tab ${activeTab === 'details' ? 'tab-active' : ''}`}
                         onClick={() => setActiveTab('details')}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            setActiveTab('details');
-                          }
-                        }}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
                         Details
                       </a>
                       <a
-                        className={`tab gap-2 transition-all duration-200 ${activeTab === 'stats' ? 'tab-active' : ''}`}
+                        className={`tab ${activeTab === 'stats' ? 'tab-active' : ''}`}
                         onClick={() => setActiveTab('stats')}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            setActiveTab('stats');
-                          }
-                        }}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
                         Stats
                       </a>
                       <a
-                        className={`tab gap-2 transition-all duration-200 ${activeTab === 'history' ? 'tab-active' : ''}`}
+                        className={`tab ${activeTab === 'history' ? 'tab-active' : ''}`}
                         onClick={() => setActiveTab('history')}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            setActiveTab('history');
-                          }
-                        }}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
                         History
                       </a>
                       <a
-                        className={`tab gap-2 transition-all duration-200 ${activeTab === 'lore' ? 'tab-active' : ''}`}
+                        className={`tab ${activeTab === 'lore' ? 'tab-active' : ''}`}
                         onClick={() => setActiveTab('lore')}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            setActiveTab('lore');
-                          }
-                        }}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
                         Lore
                       </a>
                     </div>
@@ -547,73 +448,41 @@ const GalleryDetailPage: NextPage = () => {
                 </div>
 
                 {/* Similar NFTs */}
-                <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                <div className="card bg-base-100 shadow-xl">
                   <div className="card-body">
-                    <h2 className="card-title flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                      Similar NFTs
-                    </h2>
+                    <h2 className="card-title">Similar NFTs</h2>
 
-                    <div className="carousel carousel-center max-w-full p-4 space-x-4 rounded-box">
-                      {mockNfts.filter(item => item.id !== nft.id).map((item, index) => (
-                        <div key={item.id} className="carousel-item">
-                          <div className="card bg-base-200 shadow-md hover:shadow-lg transition-all duration-300 w-48"
-                            style={{
-                              animationDelay: `${index * 0.1}s`,
-                              opacity: 0,
-                              animation: 'fadeIn 0.5s ease-out forwards',
-                              animationDelay: `${index * 0.1 + 0.5}s`
-                            }}
-                          >
-                            <figure className="px-2 pt-2 relative overflow-hidden">
-                              <img
-                                src={item.imageUrl || "/images/placeholder-nft.png"}
-                                alt={item.name}
-                                className="rounded-xl h-32 w-full object-cover transform transition-transform duration-500 hover:scale-110"
-                                onError={(e) => { e.currentTarget.src = "/images/placeholder-nft.png"; }}
-                                loading="lazy"
-                              />
-                              <div className="absolute top-3 right-3">
-                                <span className={`badge badge-sm ${
-                                  item.rarity === "Legendary" ? "badge-secondary" :
-                                  item.rarity === "Epic" ? "badge-primary" :
-                                  item.rarity === "Rare" ? "badge-info" :
-                                  item.rarity === "Uncommon" ? "badge-success" :
-                                  "badge-ghost"
-                                }`}>
-                                  {item.rarity}
-                                </span>
-                              </div>
-                            </figure>
-                            <div className="card-body p-3">
-                              <h3 className="card-title text-sm">{item.name}</h3>
-                              <div className="flex items-center gap-1 mt-1">
-                                <img src="/images/gold-token-icon.png" alt="GOLD" className="w-4 h-4" />
-                                <span className="text-xs font-bold text-goldium-600">{Math.floor(Math.random() * 100) + 10} GOLD</span>
-                              </div>
-                              <div className="card-actions justify-end mt-2">
-                                <Link
-                                  href={`/gallery/${item.id}`}
-                                  className="btn btn-xs btn-primary hover:scale-105 transition-transform duration-200"
-                                >
-                                  View
-                                </Link>
-                              </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                      {mockNfts.filter(item => item.id !== nft.id).map((item) => (
+                        <div key={item.id} className="card bg-base-200">
+                          <figure className="px-2 pt-2">
+                            <img
+                              src={item.imageUrl || "/images/placeholder-nft.png"}
+                              alt={item.name}
+                              className="rounded-xl h-24 w-full object-cover"
+                              onError={(e) => { e.currentTarget.src = "/images/placeholder-nft.png"; }}
+                              loading="lazy"
+                            />
+                          </figure>
+                          <div className="card-body p-2">
+                            <h3 className="card-title text-sm">{item.name}</h3>
+                            <span className={`badge badge-sm ${
+                              item.rarity === "Legendary" ? "badge-secondary" :
+                              item.rarity === "Epic" ? "badge-primary" :
+                              item.rarity === "Rare" ? "badge-info" :
+                              item.rarity === "Uncommon" ? "badge-success" :
+                              "badge-ghost"
+                            }`}>
+                              {item.rarity}
+                            </span>
+                            <div className="card-actions justify-end mt-2">
+                              <Link href={`/gallery/${item.id}`} className="btn btn-xs btn-primary">
+                                View
+                              </Link>
                             </div>
                           </div>
                         </div>
                       ))}
-                    </div>
-
-                    <div className="flex justify-center mt-4">
-                      <button className="btn btn-sm btn-outline gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                        </svg>
-                        View More
-                      </button>
                     </div>
                   </div>
                 </div>

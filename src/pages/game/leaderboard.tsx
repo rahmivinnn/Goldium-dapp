@@ -39,19 +39,19 @@ const LeaderboardPage: NextPage = () => {
   const { publicKey, connected } = useWallet();
   const [activeTab, setActiveTab] = useState("global");
   const [selectedSeason, setSelectedSeason] = useState("current");
-
+  
   const { data } = useDataFetch<TwitterResponse>(
     connected && publicKey ? `/api/twitter/${publicKey}` : null
   );
 
   const twitterHandle = data && data.handle;
-
+  
   // Get current player rank
   const currentPlayerRank = mockLeaderboard.find(player => player.username === "GoldenEggMaster")?.rank || 0;
-
+  
   // Get current season
   const currentSeason = mockSeasons.find(season => season.id === selectedSeason);
-
+  
   return (
     <>
       <Head>
@@ -64,7 +64,7 @@ const LeaderboardPage: NextPage = () => {
       <DrawerContainer>
         <PageContainer>
           <Header twitterHandle={twitterHandle} />
-
+          
           <div className="bg-base-200 p-6 rounded-box mb-8">
             <div className="flex justify-between items-center mb-6">
               <div>
@@ -75,9 +75,9 @@ const LeaderboardPage: NextPage = () => {
                   Back to Game
                 </Link>
                 <h1 className="text-3xl font-bold">Leaderboard</h1>
-                <p>See who&apos;s on top of the Goldium card game rankings</p>
+                <p>See who's on top of the Goldium card game rankings</p>
               </div>
-
+              
               {currentSeason && (
                 <div className="text-right">
                   <h2 className="text-xl font-bold">{currentSeason.name}</h2>
@@ -87,10 +87,10 @@ const LeaderboardPage: NextPage = () => {
                 </div>
               )}
             </div>
-
+            
             {/* Season Selector */}
             <div className="flex justify-end mb-6">
-              <select
+              <select 
                 className="select select-bordered"
                 value={selectedSeason}
                 onChange={(e) => setSelectedSeason(e.target.value)}
@@ -102,35 +102,35 @@ const LeaderboardPage: NextPage = () => {
                 ))}
               </select>
             </div>
-
+            
             {/* Tabs */}
             <div className="tabs tabs-boxed mb-6">
-              <a
+              <a 
                 className={`tab ${activeTab === 'global' ? 'tab-active' : ''}`}
                 onClick={() => setActiveTab('global')}
               >
                 Global
               </a>
-              <a
+              <a 
                 className={`tab ${activeTab === 'friends' ? 'tab-active' : ''}`}
                 onClick={() => setActiveTab('friends')}
               >
                 Friends
               </a>
-              <a
+              <a 
                 className={`tab ${activeTab === 'guild' ? 'tab-active' : ''}`}
                 onClick={() => setActiveTab('guild')}
               >
                 Guild
               </a>
             </div>
-
+            
             {/* Player Highlight */}
             {connected && (
               <div className="card bg-base-100 shadow-xl mb-6">
                 <div className="card-body">
                   <h2 className="card-title">Your Ranking</h2>
-
+                  
                   <div className="overflow-x-auto">
                     <table className="table">
                       <thead>
@@ -172,12 +172,12 @@ const LeaderboardPage: NextPage = () => {
                 </div>
               </div>
             )}
-
+            
             {/* Leaderboard Table */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <h2 className="card-title">Top Players</h2>
-
+                
                 <div className="overflow-x-auto">
                   <table className="table">
                     <thead>
@@ -198,8 +198,8 @@ const LeaderboardPage: NextPage = () => {
                             {player.rank <= 3 ? (
                               <div className="avatar placeholder">
                                 <div className={`bg-${
-                                  player.rank === 1 ? "goldium" :
-                                  player.rank === 2 ? "base-300" :
+                                  player.rank === 1 ? "goldium" : 
+                                  player.rank === 2 ? "base-300" : 
                                   "amber"
                                 }-500 text-neutral-content rounded-full w-8`}>
                                   <span>{player.rank}</span>
@@ -232,7 +232,7 @@ const LeaderboardPage: NextPage = () => {
                     </tbody>
                   </table>
                 </div>
-
+                
                 <div className="flex justify-center mt-4">
                   <div className="btn-group">
                     <button className="btn btn-sm">«</button>
@@ -244,12 +244,12 @@ const LeaderboardPage: NextPage = () => {
                 </div>
               </div>
             </div>
-
+            
             {/* Season Rewards */}
             <div className="card bg-base-100 shadow-xl mt-6">
               <div className="card-body">
                 <h2 className="card-title">Season Rewards</h2>
-
+                
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                   <div className="card bg-gradient-to-br from-goldium-300 to-goldium-500 text-neutral-content shadow-lg">
                     <div className="card-body">
@@ -262,7 +262,7 @@ const LeaderboardPage: NextPage = () => {
                       </ul>
                     </div>
                   </div>
-
+                  
                   <div className="card bg-gradient-to-br from-base-300 to-base-100 shadow-lg">
                     <div className="card-body">
                       <h3 className="card-title">2nd Place</h3>
@@ -274,7 +274,7 @@ const LeaderboardPage: NextPage = () => {
                       </ul>
                     </div>
                   </div>
-
+                  
                   <div className="card bg-gradient-to-br from-amber-300 to-amber-500 text-neutral-content shadow-lg">
                     <div className="card-body">
                       <h3 className="card-title">3rd Place</h3>
@@ -287,7 +287,7 @@ const LeaderboardPage: NextPage = () => {
                     </div>
                   </div>
                 </div>
-
+                
                 <div className="alert alert-info mt-4">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                   <span>All players who reach Level 20+ during the season will receive a participation reward!</span>
@@ -295,7 +295,7 @@ const LeaderboardPage: NextPage = () => {
               </div>
             </div>
           </div>
-
+          
           <Footer />
         </PageContainer>
         <div className="drawer-side">

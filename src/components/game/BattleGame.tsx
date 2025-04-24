@@ -16,7 +16,10 @@ const defaultStats = {
   attack: 5,
 };
 
-function parseStats(nft: EggNFT) {
+// Define a type for cards with stats
+export type EggNFTWithStats = EggNFT & { hp: number; mana: number; attack: number; mint: string; name: string; image: string; rarity: string; lore: string; details: string; owners: string[] };
+
+function parseStats(nft: EggNFT): EggNFTWithStats {
   // Try to parse stats from details string or attributes
   let hp = defaultStats.hp, mana = defaultStats.mana, attack = defaultStats.attack;
   // Try to extract from details (e.g., "HP: 80, Mana: 60, Power: 25")
@@ -47,25 +50,43 @@ function getOpponentDeck(deckSize: number): EggNFT[] {
   }));
 }
 
-const initialState = (playerDeck: EggNFT[], opponentDeck: EggNFT[]) => ({
-  player: {
-    hp: playerDeck.reduce((acc, c) => acc + (c.hp || defaultStats.hp), 0),
-    mana: 15,
-    hand: playerDeck.map(parseStats),
-    field: [],
-  },
-  opponent: {
-    hp: opponentDeck.reduce((acc, c) => acc + (c.hp || defaultStats.hp), 0),
-    mana: 15,
-    hand: opponentDeck,
-    field: [],
-  },
-  turn: "player" as "player" | "opponent",
-  battleLog: ["Battle started!"],
-  winner: null as null | "player" | "opponent",
-});
+interface PlayerState {
+  hp: number;
+  mana: number;
+  hand: EggNFTWithStats[];
+  field: EggNFTWithStats[];
+}
 
-type State = ReturnType<typeof initialState>;
+interface GameState {
+  player: PlayerState;
+  opponent: PlayerState;
+  turn: "player" | "opponent";
+  battleLog: string[];
+  winner: null | "player" | "opponent";
+}
+
+const initialState = (playerDeck: EggNFT[], opponentDeck: EggNFT[]): GameState => {
+  const parsedPlayerDeck = playerDeck.map(parseStats) as EggNFTWithStats[];
+  const parsedOpponentDeck = opponentDeck.map(parseStats) as EggNFTWithStats[];
+  return {
+    player: {
+      hp: parsedPlayerDeck.reduce((acc, c) => acc + (c.hp || defaultStats.hp), 0),
+      mana: 15,
+      hand: parsedPlayerDeck,
+      field: [],
+    },
+    opponent: {
+      hp: parsedOpponentDeck.reduce((acc, c) => acc + (c.hp || defaultStats.hp), 0),
+      mana: 15,
+      hand: parsedOpponentDeck,
+      field: [],
+    },
+    turn: "player",
+    battleLog: ["Battle started!"],
+    winner: null,
+  };
+};
+
 type Action =
   | { type: "PLAY_CARD"; cardId: string }
   | { type: "ATTACK"; attackerId: string; target: "opponent" | "player" }
@@ -74,10 +95,9 @@ type Action =
   | { type: "LOG"; message: string }
   | { type: "WINNER"; winner: "player" | "opponent" };
 
-function reducer(state: State, action: Action): State {
+function reducer(state: GameState, action: Action): GameState {
   switch (action.type) {
     case "PLAY_CARD": {
-      // Move card from hand to field
       const card = state.player.hand.find((c) => c.mint === action.cardId);
       if (!card || state.turn !== "player") return state;
       return {
@@ -95,7 +115,6 @@ function reducer(state: State, action: Action): State {
       };
     }
     case "ATTACK": {
-      // Player attacks opponent directly (for now)
       if (state.turn !== "player") return state;
       const attacker = state.player.field.find((c) => c.mint === action.attackerId);
       if (!attacker) return state;
@@ -114,18 +133,7 @@ function reducer(state: State, action: Action): State {
         winner,
       };
     }
-    case "END_TURN": {
-      return {
-        ...state,
-        turn: state.turn === "player" ? "opponent" : "player",
-        battleLog: [
-          `${state.turn === "player" ? "You" : "Opponent"} ended their turn!`,
-          ...state.battleLog,
-        ],
-      };
-    }
     case "OPPONENT_PLAY": {
-      // Opponent plays the first card in hand, attacks player
       const card = state.opponent.hand[0];
       if (!card || state.turn !== "opponent") return state;
       const newPlayerHp = state.player.hp - card.attack;
@@ -165,19 +173,39 @@ function reducer(state: State, action: Action): State {
         ],
       };
     }
+    case "END_TURN": {
+      return {
+        ...state,
+        turn: state.turn === "player" ? "opponent" : "player",
+        battleLog: [
+          `${state.turn === "player" ? "You" : "Opponent"} ended their turn!`,
+          ...state.battleLog,
+        ],
+      };
+    }
     default:
       return state;
   }
 }
 
 const BattleGame: React.FC<BattleGameProps> = ({ playerDeck }) => {
-  const [state, dispatch] = useReducer(
-    reducer,
-    initialState(
-      playerDeck.map(parseStats),
-      getOpponentDeck(playerDeck.length)
-    )
-  );
+  const [state, dispatch] = useReducer(reducer, {
+    player: {
+      hp: playerDeck.reduce((acc, c) => acc + (c.hp || defaultStats.hp), 0),
+      mana: 15,
+      hand: playerDeck.map(parseStats),
+      field: [],
+    },
+    opponent: {
+      hp: getOpponentDeck(playerDeck.length).reduce((acc, c) => acc + (c.hp || defaultStats.hp), 0),
+      mana: 15,
+      hand: getOpponentDeck(playerDeck.length).map(parseStats),
+      field: [],
+    },
+    turn: "player",
+    battleLog: ["Battle started!"],
+    winner: null,
+  });
   const { player, opponent, turn, battleLog, winner } = state;
   const { play: playSound } = useEggSounds();
   const { publicKey, wallet } = useWallet();
@@ -196,8 +224,6 @@ const BattleGame: React.FC<BattleGameProps> = ({ playerDeck }) => {
     if (winner === "player") {
       recordWin(connection, wallet);
     }
-    // recordWin is an outer scope function and doesn't need to be in the dependency array
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [winner, connection, wallet]);
 
   // Opponent plays automatically after player ends turn
@@ -257,7 +283,7 @@ const BattleGame: React.FC<BattleGameProps> = ({ playerDeck }) => {
             />
             <button
               className="mt-2 bg-yellow-400 hover:bg-yellow-500 text-white text-xs px-2 py-1 rounded shadow"
-              disabled={turn !== "player" || winner}
+              disabled={turn !== "player" || Boolean(winner)}
               onClick={() => {
                 playSound("click");
                 dispatch({ type: "ATTACK", attackerId: card.mint, target: "opponent" });
@@ -274,15 +300,15 @@ const BattleGame: React.FC<BattleGameProps> = ({ playerDeck }) => {
           <motion.div
             key={card.mint}
             whileHover={{ scale: 1.08 }}
-            drag={turn === "player" && player.mana >= card.mana && !winner}
+            drag={turn === "player" && player.mana >= card.mana && !Boolean(winner)}
             dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
             onDoubleClick={() =>
-              turn === "player" && player.mana >= card.mana && !winner
+              turn === "player" && player.mana >= card.mana && !Boolean(winner)
                 ? dispatch({ type: "PLAY_CARD", cardId: card.mint })
                 : null
             }
             className={`bg-yellow-100 dark:bg-gray-800 rounded-xl shadow-md p-2 flex flex-col items-center w-28 cursor-pointer border-2 ${
-              turn === "player" && player.mana >= card.mana && !winner
+              turn === "player" && player.mana >= card.mana && !Boolean(winner)
                 ? "border-yellow-400"
                 : "border-gray-300 opacity-50 cursor-not-allowed"
             }`}
@@ -305,7 +331,7 @@ const BattleGame: React.FC<BattleGameProps> = ({ playerDeck }) => {
         <button
           className="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-6 rounded shadow disabled:opacity-50"
           onClick={() => dispatch({ type: "END_TURN" })}
-          disabled={turn !== "player" || winner}
+          disabled={turn !== "player" || Boolean(winner)}
         >
           End Turn
         </button>
@@ -318,7 +344,7 @@ const BattleGame: React.FC<BattleGameProps> = ({ playerDeck }) => {
       </div>
       {/* Winner Modal */}
       <AnimatePresence>
-        {winner && (
+        {Boolean(winner) && (
           <motion.div
             className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50"
             initial={{ opacity: 0 }}

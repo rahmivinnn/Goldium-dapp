@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useUserEggNFTs, EggNFT } from "../../hooks/useUserEggNFTs";
+import { useUserEggNFTs, EggNFT } from "../hooks/useUserEggNFTs";
 import { motion } from "framer-motion";
 
 interface DeckBuilderProps {

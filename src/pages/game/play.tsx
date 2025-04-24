@@ -7,6 +7,7 @@ import { DrawerContainer } from "@components/layout/drawer-container";
 import { Menu } from "@components/layout/menu";
 import { TwitterResponse } from "@pages/api/twitter/[key]";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useDataFetch } from "@utils/use-data-fetch";
 import { Footer } from "@components/layout/footer";
 import { APP_DESCRIPTION, APP_NAME } from "@utils/globals";
@@ -15,11 +16,11 @@ import { useRouter } from "next/router";
 
 // Mock card data
 const mockCards = [
-  { id: 1, name: "Golden Egg", power: 5, health: 5, type: "Normal", imageUrl: "/images/card-1.png", description: "A basic golden egg with balanced stats." },
-  { id: 2, name: "Fire Egg", power: 7, health: 3, type: "Fire", imageUrl: "/images/card-2.png", description: "A fiery egg with high attack but low health." },
-  { id: 3, name: "Water Egg", power: 3, health: 7, type: "Water", imageUrl: "/images/card-3.png", description: "A water egg with low attack but high health." },
-  { id: 4, name: "Earth Egg", power: 4, health: 6, type: "Earth", imageUrl: "/images/card-4.png", description: "An earth egg with balanced stats and defensive abilities." },
-  { id: 5, name: "Wind Egg", power: 6, health: 4, type: "Wind", imageUrl: "/images/card-5.png", description: "A wind egg with high attack and mobility." },
+  { id: 1, name: "Golden Egg", power: 5, health: 5, type: "Normal", imageUrl: "/images/gold-character.png", description: "A basic golden egg with balanced stats." },
+  { id: 2, name: "Fire Egg", power: 7, health: 3, type: "Fire", imageUrl: "/images/gold-character.png", description: "A fiery egg with high attack but low health." },
+  { id: 3, name: "Water Egg", power: 3, health: 7, type: "Water", imageUrl: "/images/gold-character.png", description: "A water egg with low attack but high health." },
+  { id: 4, name: "Earth Egg", power: 4, health: 6, type: "Earth", imageUrl: "/images/gold-character.png", description: "An earth egg with balanced stats and defensive abilities." },
+  { id: 5, name: "Wind Egg", power: 6, health: 4, type: "Wind", imageUrl: "/images/gold-character.png", description: "A wind egg with high attack and mobility." },
 ];
 
 // Mock opponent data
@@ -27,9 +28,9 @@ const mockOpponent = {
   name: "AI Opponent",
   level: 5,
   cards: [
-    { id: 101, name: "Dark Egg", power: 6, health: 6, type: "Dark", imageUrl: "/images/opponent-card-1.png" },
-    { id: 102, name: "Light Egg", power: 8, health: 4, type: "Light", imageUrl: "/images/opponent-card-2.png" },
-    { id: 103, name: "Thunder Egg", power: 7, health: 5, type: "Thunder", imageUrl: "/images/opponent-card-3.png" },
+    { id: 101, name: "Dark Egg", power: 6, health: 6, type: "Dark", imageUrl: "/images/gold-character.png" },
+    { id: 102, name: "Light Egg", power: 8, health: 4, type: "Light", imageUrl: "/images/gold-character.png" },
+    { id: 103, name: "Thunder Egg", power: 7, health: 5, type: "Thunder", imageUrl: "/images/gold-character.png" },
   ],
 };
 
@@ -234,7 +235,7 @@ const GamePlayPage: NextPage = () => {
                       </div>
                     </div>
 
-                    <div className="divider my-2">Opponent&apos;s Cards</div>
+                    <div className="divider my-2">Opponent's Cards</div>
 
                     <div className="flex flex-wrap justify-center gap-4">
                       {opponentCards.map((card) => (
@@ -273,14 +274,14 @@ const GamePlayPage: NextPage = () => {
                     {gameState === 'waiting' && (
                       <div className="text-center">
                         <h3 className="text-xl font-bold mb-2">Ready to Battle?</h3>
-                        <p>Click &quot;Start Game&quot; to begin!</p>
+                        <p>Click "Start Game" to begin!</p>
                       </div>
                     )}
 
                     {gameState === 'playing' && (
                       <div className="text-center">
                         <h3 className="text-xl font-bold mb-2">
-                          {playerTurn ? "Your Turn" : "Opponent&apos;s Turn"}
+                          {playerTurn ? "Your Turn" : "Opponent's Turn"}
                         </h3>
                         {playerTurn && (
                           <div>
@@ -439,7 +440,9 @@ const GamePlayPage: NextPage = () => {
             <div className="text-center py-12 bg-base-200 rounded-box mb-8">
               <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
               <p className="mb-6">Connect your wallet to play the game.</p>
-              <button className="btn btn-goldium">Connect Wallet</button>
+              <div className="flex justify-center">
+                <WalletMultiButton className="btn btn-goldium" />
+              </div>
             </div>
           )}
 

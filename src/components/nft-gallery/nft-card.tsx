@@ -54,39 +54,27 @@ export const NFTCard: React.FC<NFTCardProps> = ({
 
   return (
     <div
-      className={`nft-card card-hover group ${className}`}
+      className={`nft-card card-hover ${className}`}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
-      role="button"
-      tabIndex={0}
-      aria-label={`NFT Card: ${name}`}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          handleClick();
-        }
-      }}
     >
-      <div className="relative overflow-hidden px-4 pt-4">
-        <figure className="relative overflow-hidden rounded-xl">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-0 group-hover:opacity-30 transition-opacity duration-300 z-10"></div>
-          <img
-            src={imageUrl || "/images/placeholder-nft.png"}
-            alt={name}
-            className="rounded-xl h-48 w-full object-cover transform transition-transform duration-500 group-hover:scale-110"
-            onError={(e) => { e.currentTarget.src = "/images/placeholder-nft.png"; }}
-            loading="lazy"
-          />
+      <figure className="px-4 pt-4">
+        <img
+          src={imageUrl || "/images/placeholder-nft.png"}
+          alt={name}
+          className="rounded-xl h-48 w-full object-cover"
+          onError={(e) => { e.currentTarget.src = "/images/placeholder-nft.png"; }}
+          loading="lazy"
+        />
+      </figure>
+      <div className="card-body p-4">
+        <h2 className="card-title text-lg flex justify-between">
+          {name}
           {rarity && (
-            <span className={`absolute top-2 right-2 badge ${rarityColor} z-20`}>
+            <span className={`badge ${rarityColor}`}>
               {rarity}
             </span>
           )}
-        </figure>
-      </div>
-
-      <div className="card-body p-4">
-        <h2 className="card-title text-lg">
-          {name}
         </h2>
 
         {collection && <p className="text-sm opacity-70">{collection}</p>}
@@ -96,17 +84,12 @@ export const NFTCard: React.FC<NFTCardProps> = ({
             {traits.slice(0, 3).map((trait, index) => (
               <span key={index} className="badge badge-sm badge-outline">{trait.value}</span>
             ))}
-            {traits.length > 3 && (
-              <span className="badge badge-sm badge-outline tooltip" data-tip="Click to see all traits">
-                +{traits.length - 3}
-              </span>
-            )}
+            {traits.length > 3 && <span className="badge badge-sm badge-outline">+{traits.length - 3}</span>}
           </div>
         )}
 
         {showPrice && price !== undefined && (
-          <div className="mt-2 flex items-center">
-            <img src="/images/gold-token-icon.png" alt="GOLD" className="w-5 h-5 mr-1" />
+          <div className="mt-2">
             <span className="font-bold text-goldium-600">{price} GOLD</span>
           </div>
         )}
@@ -115,11 +98,8 @@ export const NFTCard: React.FC<NFTCardProps> = ({
           {showLink && (
             <Link
               href={linkUrl || `/gallery/${id}`}
-              className="btn btn-sm btn-primary hover:scale-105 transition-transform duration-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                playSound('click');
-              }}
+              className="btn btn-sm btn-primary"
+              onClick={(e) => e.stopPropagation()}
             >
               View Details
             </Link>

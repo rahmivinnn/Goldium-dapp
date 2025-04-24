@@ -50,14 +50,6 @@ module.exports = {
         'spin-slow': 'spin 3s linear infinite',
         'wiggle': 'wiggle 1s ease-in-out infinite',
         'sparkle': 'sparkle 1.5s ease-in-out infinite',
-        'float': 'float 6s ease-in-out infinite',
-        'scale': 'scale 2s ease-in-out infinite',
-        'slide-in': 'slideIn 0.5s ease-out',
-        'slide-out': 'slideOut 0.5s ease-in',
-        'fade-in': 'fadeIn 0.5s ease-out',
-        'fade-out': 'fadeOut 0.5s ease-in',
-        'bounce-in': 'bounceIn 0.7s ease-out',
-        'shake': 'shake 0.5s ease-in-out',
       },
       keyframes: {
         wiggle: {
@@ -68,47 +60,6 @@ module.exports = {
           '0%, 100%': { opacity: 0 },
           '50%': { opacity: 1 },
         },
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
-        },
-        scale: {
-          '0%, 100%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.05)' },
-        },
-        slideIn: {
-          '0%': { transform: 'translateY(20px)', opacity: 0 },
-          '100%': { transform: 'translateY(0)', opacity: 1 },
-        },
-        slideOut: {
-          '0%': { transform: 'translateY(0)', opacity: 1 },
-          '100%': { transform: 'translateY(20px)', opacity: 0 },
-        },
-        fadeIn: {
-          '0%': { opacity: 0 },
-          '100%': { opacity: 1 },
-        },
-        fadeOut: {
-          '0%': { opacity: 1 },
-          '100%': { opacity: 0 },
-        },
-        bounceIn: {
-          '0%': { transform: 'scale(0.8)', opacity: 0 },
-          '70%': { transform: 'scale(1.1)', opacity: 1 },
-          '100%': { transform: 'scale(1)', opacity: 1 },
-        },
-        shake: {
-          '0%, 100%': { transform: 'translateX(0)' },
-          '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-5px)' },
-          '20%, 40%, 60%, 80%': { transform: 'translateX(5px)' },
-        },
-      },
-      backdropBlur: {
-        xs: '2px',
-      },
-      transitionProperty: {
-        'height': 'height',
-        'spacing': 'margin, padding',
       },
     },
   },

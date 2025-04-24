@@ -13,6 +13,9 @@ export interface EggNFT {
   lore: string;
   details: string;
   owners: string[];
+  hp?: number;
+  mana?: number;
+  attack?: number;
 }
 
 export function useUserEggNFTs() {
