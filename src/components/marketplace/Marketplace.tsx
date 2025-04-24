@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useConnection } from "@solana/wallet-adapter-react";
-import { useUserEggNFTs, EggNFT } from "@/hooks/useUserEggNFTs";
+import { useUserEggNFTs, EggNFT } from "../../hooks/useUserEggNFTs";
 import { motion } from "framer-motion";
 import { GoldBalance } from "./GoldBalance";
-import { fetchMarketplaceListings, buyNft } from "@/lib/metaplexAuctionHouse";
+import { fetchMarketplaceListings, buyNft } from "../../lib/metaplexAuctionHouse";
 
 export default function Marketplace() {
   const { publicKey, wallet } = useWallet();

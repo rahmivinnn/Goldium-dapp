@@ -1,8 +1,8 @@
 import React, { useReducer, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { EggNFT } from "@/hooks/useUserEggNFTs";
-import { useEggSounds } from "@/components/sound/useEggSounds";
-import { recordWin } from "@/lib/leaderboardClient";
+import { EggNFT } from "../../hooks/useUserEggNFTs";
+import { useEggSounds } from "../sound/useEggSounds";
+import { recordWin } from "../../lib/leaderboardClient";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useConnection } from "@solana/wallet-adapter-react";
 
@@ -189,14 +189,14 @@ const BattleGame: React.FC<BattleGameProps> = ({ playerDeck }) => {
     if (battleLog[0]?.includes("attacked")) playSound("attack");
     if (winner === "player") playSound("win");
     if (winner === "opponent") playSound("lose");
-  }, [battleLog, winner]);
+  }, [battleLog, winner, playSound]);
 
   // Record win in leaderboard (dummy or real)
   useEffect(() => {
     if (winner === "player") {
       recordWin(connection, wallet);
     }
-  }, [winner]);
+  }, [winner, connection, wallet, recordWin]);
 
   // Opponent plays automatically after player ends turn
   useEffect(() => {

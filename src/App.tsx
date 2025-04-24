@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import PhantomConnect from "@/components/wallet/PhantomConnect";
-import DarkModeToggle from "@/components/ui/DarkModeToggle";
-import BackgroundMusic from "@/components/sound/BackgroundMusic";
-import Notification from "@/components/ui/Notification";
-import NftGallery from "@/components/nft/NftGallery";
-import BattleGame from "@/components/game/BattleGame";
-import DeckBuilder from "@/components/deck/DeckBuilder";
-import Marketplace from "@/components/marketplace/Marketplace";
-import Leaderboard from "@/components/leaderboard/Leaderboard";
-import { NotificationProvider } from "@/components/ui/NotificationContext";
+import PhantomConnect from "./components/wallet/PhantomConnect";
+import DarkModeToggle from "./components/ui/DarkModeToggle";
+import BackgroundMusic from "./components/sound/BackgroundMusic";
+import Notification from "./components/ui/Notification";
+import NftGallery from "./components/nft/NftGallery";
+import BattleGame from "./components/game/BattleGame";
+import DeckBuilder from "./components/deck/DeckBuilder";
+import Marketplace from "./components/marketplace/Marketplace";
+import Leaderboard from "./components/leaderboard/Leaderboard";
+import { NotificationProvider } from "./components/ui/NotificationContext";
 
 const App = () => {
   const [notification, setNotification] = useState<string | null>(null);

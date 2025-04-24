@@ -101,6 +101,8 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setVolume(parseFloat(savedVolume));
       }
     }
+    // We only want this to run once on mount, volume is set within this effect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update audio volume when volume changes

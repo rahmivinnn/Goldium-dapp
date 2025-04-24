@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import LoreModal from "./LoreModal";
-import { useUserEggNFTs } from "@/hooks/useUserEggNFTs";
+import { useUserEggNFTs } from "../../hooks/useUserEggNFTs";
 
 const NftGallery = () => {
   const { nfts, loading, error } = useUserEggNFTs();

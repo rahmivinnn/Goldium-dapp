@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { getLeaderboard } from "@/lib/leaderboardClient";
+import { getLeaderboard } from "../../lib/leaderboardClient";
 import { useConnection } from "@solana/wallet-adapter-react";
 
 export default function Leaderboard() {

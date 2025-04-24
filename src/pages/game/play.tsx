@@ -273,7 +273,7 @@ const GamePlayPage: NextPage = () => {
                     {gameState === 'waiting' && (
                       <div className="text-center">
                         <h3 className="text-xl font-bold mb-2">Ready to Battle?</h3>
-                        <p>Click "Start Game" to begin!</p>
+                        <p>Click &quot;Start Game&quot; to begin!</p>
                       </div>
                     )}
 
