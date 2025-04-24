@@ -81,7 +81,7 @@ export function Modal({
                 required
               />
               <label className="label">
-                <span className="label-text-alt text-gray-500">Enter the recipient's wallet address</span>
+                <span className="label-text-alt text-gray-500">Enter the recipient&apos;s wallet address</span>
               </label>
             </div>
 

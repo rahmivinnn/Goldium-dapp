@@ -16,7 +16,7 @@ export const Notification: React.FC<NotificationProps> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const { playSound } = useSound();
-  
+
   // Play sound when notification appears
   useEffect(() => {
     if (type === 'success') {
@@ -28,18 +28,18 @@ export const Notification: React.FC<NotificationProps> = ({
     } else {
       playSound('notification');
     }
-  }, []);
-  
+  }, [playSound, type]);
+
   // Auto-close notification after duration
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
       if (onClose) onClose();
     }, duration);
-    
+
     return () => clearTimeout(timer);
   }, [duration, onClose]);
-  
+
   // Get alert style based on type
   const getAlertClass = () => {
     switch (type) {
@@ -53,7 +53,7 @@ export const Notification: React.FC<NotificationProps> = ({
         return 'alert-info';
     }
   };
-  
+
   // Get icon based on type
   const getIcon = () => {
     switch (type) {
@@ -83,9 +83,9 @@ export const Notification: React.FC<NotificationProps> = ({
         );
     }
   };
-  
+
   if (!isVisible) return null;
-  
+
   return (
     <div className="fixed bottom-4 right-4 z-50 animate-bounce-in">
       <div className={`alert ${getAlertClass()} shadow-lg max-w-md`}>
@@ -93,8 +93,8 @@ export const Notification: React.FC<NotificationProps> = ({
           {getIcon()}
           <span>{message}</span>
         </div>
-        <button 
-          className="btn btn-circle btn-xs" 
+        <button
+          className="btn btn-circle btn-xs"
           onClick={() => {
             setIsVisible(false);
             if (onClose) onClose();

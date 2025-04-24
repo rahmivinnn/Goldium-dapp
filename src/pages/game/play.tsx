@@ -37,7 +37,7 @@ const GamePlayPage: NextPage = () => {
   const { publicKey, connected } = useWallet();
   const router = useRouter();
   const { mode } = router.query;
-  
+
   const [gameState, setGameState] = React.useState("waiting"); // waiting, playing, ended
   const [playerTurn, setPlayerTurn] = React.useState(true);
   const [selectedCard, setSelectedCard] = React.useState<number | null>(null);
@@ -47,13 +47,13 @@ const GamePlayPage: NextPage = () => {
   const [opponentHealth, setOpponentHealth] = React.useState(20);
   const [gameLog, setGameLog] = React.useState<string[]>([]);
   const [turnCount, setTurnCount] = React.useState(0);
-  
+
   const { data } = useDataFetch<TwitterResponse>(
     connected && publicKey ? `/api/twitter/${publicKey}` : null
   );
 
   const twitterHandle = data && data.handle;
-  
+
   // Start game
   const startGame = () => {
     setGameState("playing");
@@ -61,37 +61,37 @@ const GamePlayPage: NextPage = () => {
     setTurnCount(1);
     addToGameLog("Game started! Your turn.");
   };
-  
+
   // End turn
   const endTurn = () => {
     setPlayerTurn(false);
     setSelectedCard(null);
     addToGameLog("Your turn ended. Opponent's turn.");
-    
+
     // Simulate opponent's turn after a delay
     setTimeout(() => {
       opponentTurn();
     }, 1500);
   };
-  
+
   // Opponent's turn logic
   const opponentTurn = () => {
     if (opponentCards.length === 0 || playerCards.length === 0) {
       endGame();
       return;
     }
-    
+
     // Simple AI: randomly select a card and attack
     const randomCardIndex = Math.floor(Math.random() * opponentCards.length);
     const attackingCard = opponentCards[randomCardIndex];
-    
+
     addToGameLog(`Opponent attacks with ${attackingCard.name}!`);
-    
+
     // Apply damage to player
     const newPlayerHealth = Math.max(0, playerHealth - attackingCard.power);
     setPlayerHealth(newPlayerHealth);
     addToGameLog(`You take ${attackingCard.power} damage!`);
-    
+
     if (newPlayerHealth <= 0) {
       // Player lost
       setTimeout(() => {
@@ -99,7 +99,7 @@ const GamePlayPage: NextPage = () => {
       }, 1000);
       return;
     }
-    
+
     // End opponent's turn
     setTimeout(() => {
       setPlayerTurn(true);
@@ -107,21 +107,21 @@ const GamePlayPage: NextPage = () => {
       addToGameLog(`Turn ${turnCount + 1}. Your turn.`);
     }, 1000);
   };
-  
+
   // Player attacks with selected card
   const attackWithCard = () => {
     if (selectedCard === null) return;
-    
+
     const attackingCard = playerCards.find(card => card.id === selectedCard);
     if (!attackingCard) return;
-    
+
     addToGameLog(`You attack with ${attackingCard.name}!`);
-    
+
     // Apply damage to opponent
     const newOpponentHealth = Math.max(0, opponentHealth - attackingCard.power);
     setOpponentHealth(newOpponentHealth);
     addToGameLog(`Opponent takes ${attackingCard.power} damage!`);
-    
+
     if (newOpponentHealth <= 0) {
       // Player won
       setTimeout(() => {
@@ -129,15 +129,15 @@ const GamePlayPage: NextPage = () => {
       }, 1000);
       return;
     }
-    
+
     // End player's turn
     endTurn();
   };
-  
+
   // End game
   const endGame = () => {
     setGameState("ended");
-    
+
     if (opponentHealth <= 0) {
       addToGameLog("You won the game! +50 GOLD");
     } else if (playerHealth <= 0) {
@@ -146,12 +146,12 @@ const GamePlayPage: NextPage = () => {
       addToGameLog("The game ended in a draw.");
     }
   };
-  
+
   // Add message to game log
   const addToGameLog = (message: string) => {
     setGameLog(prev => [...prev, message]);
   };
-  
+
   // Reset game
   const resetGame = () => {
     setGameState("waiting");
@@ -177,33 +177,33 @@ const GamePlayPage: NextPage = () => {
       <DrawerContainer>
         <PageContainer>
           <Header twitterHandle={twitterHandle} />
-          
+
           {connected ? (
             <div className="bg-base-200 p-4 rounded-box mb-8">
               <div className="flex justify-between items-center mb-4">
                 <h1 className="text-2xl font-bold">
                   {mode === 'pvp' ? 'PvP Battle' : 'PvE Battle'} - {gameState === 'waiting' ? 'Waiting to Start' : gameState === 'playing' ? `Turn ${turnCount}` : 'Game Over'}
                 </h1>
-                
+
                 <div>
                   {gameState === 'waiting' && (
                     <button className="btn btn-goldium" onClick={startGame}>
                       Start Game
                     </button>
                   )}
-                  
+
                   {gameState === 'ended' && (
                     <button className="btn btn-goldium" onClick={resetGame}>
                       Play Again
                     </button>
                   )}
-                  
+
                   <Link href="/game" className="btn btn-outline ml-2">
                     Exit Game
                   </Link>
                 </div>
               </div>
-              
+
               {/* Game Board */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Opponent Area */}
@@ -221,25 +221,25 @@ const GamePlayPage: NextPage = () => {
                           <p className="text-xs">Level {mockOpponent.level}</p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         <span className="font-bold">Health:</span>
                         <div className="w-40 bg-gray-200 rounded-full h-2.5">
-                          <div 
-                            className="bg-error h-2.5 rounded-full" 
+                          <div
+                            className="bg-error h-2.5 rounded-full"
                             style={{ width: `${(opponentHealth / 20) * 100}%` }}
                           ></div>
                         </div>
                         <span>{opponentHealth}/20</span>
                       </div>
                     </div>
-                    
-                    <div className="divider my-2">Opponent's Cards</div>
-                    
+
+                    <div className="divider my-2">Opponent&apos;s Cards</div>
+
                     <div className="flex flex-wrap justify-center gap-4">
                       {opponentCards.map((card) => (
-                        <div 
-                          key={card.id} 
+                        <div
+                          key={card.id}
                           className="game-card"
                         >
                           <div className="game-card-inner">
@@ -248,15 +248,15 @@ const GamePlayPage: NextPage = () => {
                                 <h4 className="font-bold">{card.name}</h4>
                                 <span className="badge badge-sm">{card.type}</span>
                               </div>
-                              
+
                               <div className="flex-1 flex items-center justify-center">
-                                <img 
-                                  src={card.imageUrl || "/images/placeholder-card.png"} 
-                                  alt={card.name} 
+                                <img
+                                  src={card.imageUrl || "/images/placeholder-card.png"}
+                                  alt={card.name}
                                   className="h-24 w-24 object-contain"
                                 />
                               </div>
-                              
+
                               <div className="flex justify-between mt-2">
                                 <div className="badge badge-error">ATK: {card.power}</div>
                                 <div className="badge badge-success">HP: {card.health}</div>
@@ -267,7 +267,7 @@ const GamePlayPage: NextPage = () => {
                       ))}
                     </div>
                   </div>
-                  
+
                   {/* Battlefield */}
                   <div className="bg-base-100 p-4 rounded-box mb-4 min-h-[200px] flex items-center justify-center">
                     {gameState === 'waiting' && (
@@ -276,17 +276,17 @@ const GamePlayPage: NextPage = () => {
                         <p>Click "Start Game" to begin!</p>
                       </div>
                     )}
-                    
+
                     {gameState === 'playing' && (
                       <div className="text-center">
                         <h3 className="text-xl font-bold mb-2">
-                          {playerTurn ? "Your Turn" : "Opponent's Turn"}
+                          {playerTurn ? "Your Turn" : "Opponent&apos;s Turn"}
                         </h3>
                         {playerTurn && (
                           <div>
                             <p className="mb-4">Select a card to attack with</p>
                             {selectedCard !== null && (
-                              <button 
+                              <button
                                 className="btn btn-error"
                                 onClick={attackWithCard}
                               >
@@ -297,18 +297,18 @@ const GamePlayPage: NextPage = () => {
                         )}
                       </div>
                     )}
-                    
+
                     {gameState === 'ended' && (
                       <div className="text-center">
                         <h3 className="text-2xl font-bold mb-2">
                           {opponentHealth <= 0 ? "Victory!" : "Defeat!"}
                         </h3>
                         <p className="mb-4">
-                          {opponentHealth <= 0 
-                            ? "Congratulations! You won the battle." 
+                          {opponentHealth <= 0
+                            ? "Congratulations! You won the battle."
                             : "Better luck next time!"}
                         </p>
-                        <button 
+                        <button
                           className="btn btn-goldium"
                           onClick={resetGame}
                         >
@@ -317,7 +317,7 @@ const GamePlayPage: NextPage = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   {/* Player Area */}
                   <div className="bg-base-100 p-4 rounded-box">
                     <div className="flex justify-between items-center mb-2">
@@ -331,25 +331,25 @@ const GamePlayPage: NextPage = () => {
                           <h3 className="font-bold">You</h3>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         <span className="font-bold">Health:</span>
                         <div className="w-40 bg-gray-200 rounded-full h-2.5">
-                          <div 
-                            className="bg-success h-2.5 rounded-full" 
+                          <div
+                            className="bg-success h-2.5 rounded-full"
                             style={{ width: `${(playerHealth / 20) * 100}%` }}
                           ></div>
                         </div>
                         <span>{playerHealth}/20</span>
                       </div>
                     </div>
-                    
+
                     <div className="divider my-2">Your Cards</div>
-                    
+
                     <div className="flex flex-wrap justify-center gap-4">
                       {playerCards.map((card) => (
-                        <div 
-                          key={card.id} 
+                        <div
+                          key={card.id}
                           className={`game-card ${selectedCard === card.id ? 'ring-2 ring-primary' : ''}`}
                           onClick={() => gameState === 'playing' && playerTurn && setSelectedCard(card.id)}
                         >
@@ -359,15 +359,15 @@ const GamePlayPage: NextPage = () => {
                                 <h4 className="font-bold">{card.name}</h4>
                                 <span className="badge badge-sm">{card.type}</span>
                               </div>
-                              
+
                               <div className="flex-1 flex items-center justify-center">
-                                <img 
-                                  src={card.imageUrl || "/images/placeholder-card.png"} 
-                                  alt={card.name} 
+                                <img
+                                  src={card.imageUrl || "/images/placeholder-card.png"}
+                                  alt={card.name}
                                   className="h-24 w-24 object-contain"
                                 />
                               </div>
-                              
+
                               <div className="flex justify-between mt-2">
                                 <div className="badge badge-error">ATK: {card.power}</div>
                                 <div className="badge badge-success">HP: {card.health}</div>
@@ -377,10 +377,10 @@ const GamePlayPage: NextPage = () => {
                         </div>
                       ))}
                     </div>
-                    
+
                     {gameState === 'playing' && playerTurn && (
                       <div className="flex justify-center mt-4">
-                        <button 
+                        <button
                           className="btn btn-outline"
                           onClick={endTurn}
                         >
@@ -390,11 +390,11 @@ const GamePlayPage: NextPage = () => {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Game Log */}
                 <div className="bg-base-100 p-4 rounded-box h-[600px] flex flex-col">
                   <h3 className="text-xl font-bold mb-2">Game Log</h3>
-                  
+
                   <div className="flex-1 overflow-y-auto bg-base-200 p-2 rounded-box mb-4">
                     {gameLog.length > 0 ? (
                       <div className="space-y-2">
@@ -410,7 +410,7 @@ const GamePlayPage: NextPage = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   <div>
                     <h3 className="font-bold mb-2">Card Details</h3>
                     {selectedCard !== null ? (
@@ -442,7 +442,7 @@ const GamePlayPage: NextPage = () => {
               <button className="btn btn-goldium">Connect Wallet</button>
             </div>
           )}
-          
+
           <Footer />
         </PageContainer>
         <div className="drawer-side">

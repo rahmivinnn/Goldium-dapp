@@ -7,6 +7,7 @@ import { DrawerContainer } from "@components/layout/drawer-container";
 import { Menu } from "@components/layout/menu";
 import { TwitterResponse } from "@pages/api/twitter/[key]";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useDataFetch } from "@utils/use-data-fetch";
 import { Footer } from "@components/layout/footer";
 import { APP_DESCRIPTION, APP_NAME } from "@utils/globals";
@@ -152,7 +153,7 @@ const GalleryPage: NextPage = () => {
                 <div className="flex flex-col items-center">
                   <img src="/images/placeholder-nft.png" alt="No NFTs" className="w-32 h-32 mb-4 opacity-50" />
                   <h2 className="text-2xl font-bold mb-4">No NFTs Found</h2>
-                  <p className="mb-6">You don't have any golden egg NFTs in your wallet yet.</p>
+                  <p className="mb-6">You don&apos;t have any golden egg NFTs in your wallet yet.</p>
                   <Link href="/marketplace" className="btn btn-goldium btn-3d">
                     <span className="mr-2">🛒</span>
                     Explore Marketplace
