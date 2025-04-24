@@ -4,32 +4,175 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   plugins: [require("@tailwindcss/typography"), require("daisyui")],
+  theme: {
+    extend: {
+      colors: {
+        'goldium': {
+          50: '#FFF9E6',
+          100: '#FFF3CC',
+          200: '#FFE799',
+          300: '#FFDB66',
+          400: '#FFCF33',
+          500: '#FFC300', // Primary gold
+          600: '#CC9C00',
+          700: '#997500',
+          800: '#664E00',
+          900: '#332700',
+        },
+        'skyblue': {
+          50: '#F0F8FF',
+          100: '#E1F1FF',
+          200: '#C3E3FF',
+          300: '#A5D5FF',
+          400: '#87C7FF',
+          500: '#69B9FF', // Primary sky blue
+          600: '#5494CC',
+          700: '#3F6F99',
+          800: '#2A4A66',
+          900: '#152533',
+        },
+        'eggshell': {
+          50: '#FFFDF7',
+          100: '#FFFBEF',
+          200: '#FFF7DF',
+          300: '#FFF3CF',
+          400: '#FFEFBF',
+          500: '#FFEBAF', // Primary eggshell
+          600: '#CCBC8C',
+          700: '#998D69',
+          800: '#665E46',
+          900: '#332F23',
+        },
+      },
+      animation: {
+        'bounce-slow': 'bounce 3s infinite',
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'spin-slow': 'spin 3s linear infinite',
+        'wiggle': 'wiggle 1s ease-in-out infinite',
+        'sparkle': 'sparkle 1.5s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'scale': 'scale 2s ease-in-out infinite',
+        'slide-in': 'slideIn 0.5s ease-out',
+        'slide-out': 'slideOut 0.5s ease-in',
+        'fade-in': 'fadeIn 0.5s ease-out',
+        'fade-out': 'fadeOut 0.5s ease-in',
+        'bounce-in': 'bounceIn 0.7s ease-out',
+        'shake': 'shake 0.5s ease-in-out',
+      },
+      keyframes: {
+        wiggle: {
+          '0%, 100%': { transform: 'rotate(-3deg)' },
+          '50%': { transform: 'rotate(3deg)' },
+        },
+        sparkle: {
+          '0%, 100%': { opacity: 0 },
+          '50%': { opacity: 1 },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        scale: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.05)' },
+        },
+        slideIn: {
+          '0%': { transform: 'translateY(20px)', opacity: 0 },
+          '100%': { transform: 'translateY(0)', opacity: 1 },
+        },
+        slideOut: {
+          '0%': { transform: 'translateY(0)', opacity: 1 },
+          '100%': { transform: 'translateY(20px)', opacity: 0 },
+        },
+        fadeIn: {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
+        },
+        fadeOut: {
+          '0%': { opacity: 1 },
+          '100%': { opacity: 0 },
+        },
+        bounceIn: {
+          '0%': { transform: 'scale(0.8)', opacity: 0 },
+          '70%': { transform: 'scale(1.1)', opacity: 1 },
+          '100%': { transform: 'scale(1)', opacity: 1 },
+        },
+        shake: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-5px)' },
+          '20%, 40%, 60%, 80%': { transform: 'translateX(5px)' },
+        },
+      },
+      backdropBlur: {
+        xs: '2px',
+      },
+      transitionProperty: {
+        'height': 'height',
+        'spacing': 'margin, padding',
+      },
+    },
+  },
   daisyui: {
     styled: true,
-    // If you change the default themes don't forget to update in globals and theme-toggle files
     themes: [
+      {
+        goldium: {
+          "primary": "#FFC300",
+          "primary-focus": "#CC9C00",
+          "primary-content": "#ffffff",
+
+          "secondary": "#69B9FF",
+          "secondary-focus": "#5494CC",
+          "secondary-content": "#ffffff",
+
+          "accent": "#FFEBAF",
+          "accent-focus": "#FFEFBF",
+          "accent-content": "#332F23",
+
+          "neutral": "#3D4451",
+          "neutral-focus": "#2A2E37",
+          "neutral-content": "#ffffff",
+
+          "base-100": "#FFFFFF",
+          "base-200": "#F9FAFB",
+          "base-300": "#F3F4F6",
+          "base-content": "#1F2937",
+
+          "info": "#69B9FF",
+          "success": "#87D039",
+          "warning": "#FFC300",
+          "error": "#FF5C5C",
+        },
+        goldium_dark: {
+          "primary": "#FFC300",
+          "primary-focus": "#CC9C00",
+          "primary-content": "#ffffff",
+
+          "secondary": "#69B9FF",
+          "secondary-focus": "#5494CC",
+          "secondary-content": "#ffffff",
+
+          "accent": "#FFEBAF",
+          "accent-focus": "#FFEFBF",
+          "accent-content": "#332F23",
+
+          "neutral": "#2A2E37",
+          "neutral-focus": "#1F2937",
+          "neutral-content": "#ffffff",
+
+          "base-100": "#1F2937",
+          "base-200": "#111827",
+          "base-300": "#0F172A",
+          "base-content": "#F9FAFB",
+
+          "info": "#69B9FF",
+          "success": "#87D039",
+          "warning": "#FFC300",
+          "error": "#FF5C5C",
+        },
+      },
       "night",
       "retro",
-
-      // uncomment to enable
-      // "dark",
-      // "cupcake",
-      // "bumblebee",
-      // "emerald",
-      // "corporate",
-      // "synthwave",
-      // "retro",
-      // "valentine",
-      // "halloween",
-      // "garden",
-      // "forest",
-      // "aqua",
-      // "lofi",
-      // "pastel",
-      // "fantasy",
-      // "wireframe",
-      // "black",
-      // "dracula",
     ],
     base: true,
     utils: true,

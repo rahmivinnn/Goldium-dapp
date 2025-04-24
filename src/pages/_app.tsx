@@ -5,10 +5,12 @@ import { ConnectionProvider } from "@solana/wallet-adapter-react";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 import ClientWalletProvider from "@components/contexts/ClientWalletProvider";
 import { NETWORK } from "@utils/endpoints";
+import { SoundProvider } from "@components/common/sound-manager";
 
 import "../styles/globals.css";
 import "../styles/App.css";
 import { Toaster } from "react-hot-toast";
+import { PageLoading } from "@components/common/loading";
 
 const ReactUIWalletModalProviderDynamic = dynamic(
   async () =>
@@ -18,13 +20,31 @@ const ReactUIWalletModalProviderDynamic = dynamic(
 
 function MyApp({ Component, pageProps }: AppProps) {
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    // Simulate loading assets
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <ConnectionProvider endpoint={NETWORK}>
       <ClientWalletProvider wallets={wallets}>
         <ReactUIWalletModalProviderDynamic>
-          <Toaster position="bottom-right" reverseOrder={true} />
-          <Component {...pageProps} />
+          <SoundProvider>
+            <Toaster position="bottom-right" reverseOrder={true} />
+            {isLoading ? (
+              <div className="min-h-screen flex items-center justify-center bg-base-100">
+                <PageLoading />
+              </div>
+            ) : (
+              <Component {...pageProps} />
+            )}
+          </SoundProvider>
         </ReactUIWalletModalProviderDynamic>
       </ClientWalletProvider>
     </ConnectionProvider>

@@ -1,4 +1,4 @@
-import { DEFAULT_THEME } from "@utils/globals";
+import { APP_DESCRIPTION, DEFAULT_THEME } from "@utils/globals";
 import Document, { Html, Head, Main, NextScript } from "next/document";
 
 class MyDocument extends Document {
@@ -8,7 +8,7 @@ class MyDocument extends Document {
         <Head>
           <meta
             name="description"
-            content="Everything you need to start your Solana dApp"
+            content={APP_DESCRIPTION}
           />
           <link rel="icon" href="/favicon.ico" />
 
@@ -30,6 +30,11 @@ class MyDocument extends Document {
             href="/favicon-16x16.png"
           />
           <link rel="manifest" href="/site.webmanifest" />
+
+          {/* Google Fonts */}
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
         </Head>
         <body>
           <Main />

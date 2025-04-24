@@ -23,13 +23,14 @@ export function ThemeToggle() {
   }, []);
 
   const theme = readValue("theme");
+  const isDarkMode = theme === "goldium_dark";
 
   return (
     <label className="swap swap-rotate p-4">
-      <input type="checkbox" data-toggle-theme="night,retro" />
+      <input type="checkbox" data-toggle-theme="goldium,goldium_dark" />
       <svg
         className={`${
-          theme === DEFAULT_THEME ? "swap-off" : "swap-on"
+          !isDarkMode ? "swap-off" : "swap-on"
         } fill-current w-5 h-5`}
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -38,7 +39,7 @@ export function ThemeToggle() {
       </svg>
       <svg
         className={`${
-          theme === DEFAULT_THEME ? "swap-on" : "swap-off"
+          !isDarkMode ? "swap-on" : "swap-off"
         } fill-current w-5 h-5`}
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
