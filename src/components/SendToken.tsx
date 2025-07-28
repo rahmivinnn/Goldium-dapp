@@ -17,7 +17,8 @@ import {
 } from '@solana/spl-token';
 import { FC, useState, useCallback } from 'react';
 import { notify } from '../utils/notifications';
-import { TOKENS, getTokenDecimals } from '../config/tokens';
+import { TOKENS, getTokenDecimals, SOLSCAN_CONFIG, DEVELOPER_CONFIG } from '../config/tokens';
+import { useNetworkConfiguration } from '../contexts/NetworkConfigurationProvider';
 import useTokenBalanceStore from '../stores/useTokenBalanceStore';
 import { motion } from 'framer-motion';
 
@@ -28,6 +29,7 @@ interface SendTokenProps {
 export const SendToken: FC<SendTokenProps> = ({ onSuccess }) => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
+  const { networkConfiguration } = useNetworkConfiguration();
   const { balances, getAllTokenBalances } = useTokenBalanceStore();
   
   const [recipient, setRecipient] = useState('');
@@ -35,6 +37,43 @@ export const SendToken: FC<SendTokenProps> = ({ onSuccess }) => {
   const [tokenType, setTokenType] = useState<'SOL' | 'GOLD'>('SOL');
   const [isLoading, setIsLoading] = useState(false);
   const [lastTxid, setLastTxid] = useState<string | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [estimatedFee, setEstimatedFee] = useState<number>(0.000005); // Default SOL fee
+
+  const validateInputs = useCallback(() => {
+    if (!recipient.trim()) {
+      notify({ type: 'error', message: 'Please enter a recipient address!' });
+      return false;
+    }
+
+    try {
+      new PublicKey(recipient.trim());
+    } catch (error) {
+      notify({ type: 'error', message: 'Invalid recipient address!' });
+      return false;
+    }
+
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      notify({ type: 'error', message: 'Invalid amount!' });
+      return false;
+    }
+
+    // Check balance including fees for SOL
+    const currentBalance = balances[tokenType];
+    const requiredAmount = tokenType === 'SOL' ? amountNum + estimatedFee : amountNum;
+    
+    if (requiredAmount > currentBalance) {
+      notify({ 
+        type: 'error', 
+        message: `Insufficient ${tokenType} balance!`,
+        description: tokenType === 'SOL' ? `Need ${requiredAmount.toFixed(6)} SOL (including ${estimatedFee} SOL fee)` : undefined
+      });
+      return false;
+    }
+
+    return true;
+  }, [recipient, amount, tokenType, balances, estimatedFee]);
 
   const handleSend = useCallback(async () => {
     if (!publicKey) {
@@ -42,115 +81,162 @@ export const SendToken: FC<SendTokenProps> = ({ onSuccess }) => {
       return;
     }
 
-    if (!recipient || !amount) {
-      notify({ type: 'error', message: 'Please fill in all fields!' });
+    if (!validateInputs()) {
       return;
     }
 
-    let recipientPubkey: PublicKey;
-    try {
-      recipientPubkey = new PublicKey(recipient);
-    } catch (error) {
-      notify({ type: 'error', message: 'Invalid recipient address!' });
-      return;
-    }
+    setShowConfirmation(true);
+  }, [publicKey, validateInputs]);
 
+  const confirmSend = useCallback(async () => {
+    if (!publicKey || !validateInputs()) return;
+
+    const recipientPubkey = new PublicKey(recipient.trim());
     const amountNum = parseFloat(amount);
-    if (isNaN(amountNum) || amountNum <= 0) {
-      notify({ type: 'error', message: 'Invalid amount!' });
-      return;
-    }
-
-    // Check balance
-    const currentBalance = balances[tokenType];
-    if (amountNum > currentBalance) {
-      notify({ type: 'error', message: `Insufficient ${tokenType} balance!` });
-      return;
-    }
-
+    
+    setShowConfirmation(false);
     setIsLoading(true);
     let signature: TransactionSignature = '';
     setLastTxid(null);
+    
     try {
-      const instructions = [];
-      const decimals = getTokenDecimals(tokenType);
-      const amountInSmallestUnit = Math.floor(amountNum * Math.pow(10, decimals));
+      if (DEVELOPER_CONFIG.enabled) {
+        // Simulate transaction for development
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        signature = 'SIMULATED_SEND_' + Math.random().toString(36).substring(2, 15);
+        
+        if (DEVELOPER_CONFIG.logTransactions) {
+          console.log('💸 Simulated Send Transaction:', {
+            token: tokenType,
+            amount: amountNum,
+            recipient: recipient,
+            signature: signature,
+            network: networkConfiguration,
+            timestamp: new Date().toISOString(),
+            estimatedFee: estimatedFee
+          });
+        }
+        
+        notify({ 
+          type: 'success', 
+          message: `Send simulation successful!`, 
+          description: `${amountNum} ${tokenType} → ${recipient.slice(0, 8)}...${recipient.slice(-8)}`,
+          txid: signature 
+        });
+      } else {
+        // Real transaction
+        const instructions = [];
+        const decimals = getTokenDecimals(tokenType);
+        const amountInSmallestUnit = Math.floor(amountNum * Math.pow(10, decimals));
 
-      if (tokenType === 'SOL') {
-        // Send SOL
-        instructions.push(
-          SystemProgram.transfer({
-            fromPubkey: publicKey,
-            toPubkey: recipientPubkey,
-            lamports: amountInSmallestUnit,
-          })
-        );
-      } else if (tokenType === 'GOLD') {
-        // Send GOLD token
-        const tokenMint = new PublicKey(TOKENS.GOLD.mint);
-        const senderTokenAccount = await getAssociatedTokenAddress(tokenMint, publicKey);
-        const recipientTokenAccount = await getAssociatedTokenAddress(tokenMint, recipientPubkey);
-
-        // Check if recipient token account exists
-        try {
-          await connection.getAccountInfo(recipientTokenAccount);
-        } catch (error) {
-          // Create recipient token account if it doesn't exist
+        if (tokenType === 'SOL') {
+          // Send SOL
           instructions.push(
-            createAssociatedTokenAccountInstruction(
-              publicKey,
+            SystemProgram.transfer({
+              fromPubkey: publicKey,
+              toPubkey: recipientPubkey,
+              lamports: amountInSmallestUnit,
+            })
+          );
+        } else if (tokenType === 'GOLD') {
+          // Send GOLD token
+          const tokenMint = new PublicKey(TOKENS.GOLD.mint);
+          const senderTokenAccount = await getAssociatedTokenAddress(tokenMint, publicKey);
+          const recipientTokenAccount = await getAssociatedTokenAddress(tokenMint, recipientPubkey);
+
+          // Check if recipient token account exists
+          try {
+            await connection.getAccountInfo(recipientTokenAccount);
+          } catch (error) {
+            // Create recipient token account if it doesn't exist
+            instructions.push(
+              createAssociatedTokenAccountInstruction(
+                publicKey,
+                recipientTokenAccount,
+                recipientPubkey,
+                tokenMint,
+                TOKEN_PROGRAM_ID,
+                ASSOCIATED_TOKEN_PROGRAM_ID
+              )
+            );
+          }
+
+          // Transfer tokens
+          instructions.push(
+            createTransferInstruction(
+              senderTokenAccount,
               recipientTokenAccount,
-              recipientPubkey,
-              tokenMint,
-              TOKEN_PROGRAM_ID,
-              ASSOCIATED_TOKEN_PROGRAM_ID
+              publicKey,
+              amountInSmallestUnit
             )
           );
         }
 
-        // Transfer tokens
-        instructions.push(
-          createTransferInstruction(
-            senderTokenAccount,
-            recipientTokenAccount,
-            publicKey,
-            amountInSmallestUnit
-          )
-        );
+        // Get latest blockhash
+        const latestBlockhash = await connection.getLatestBlockhash();
+
+        // Create transaction
+        const message = new TransactionMessage({
+          payerKey: publicKey,
+          recentBlockhash: latestBlockhash.blockhash,
+          instructions,
+        }).compileToLegacyMessage();
+
+        const transaction = new VersionedTransaction(message);
+
+        // Send transaction
+        signature = await sendTransaction(transaction, connection);
+        await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed');
+        notify({ 
+          type: 'success', 
+          message: `Successfully sent ${amountNum} ${tokenType}!`, 
+          description: `To: ${recipient.slice(0, 8)}...${recipient.slice(-8)}`,
+          txid: signature 
+        });
+      }
+      
+      setLastTxid(signature);
+      
+      // Refresh balances
+      await getAllTokenBalances(publicKey, connection);
+      
+      // Reset form
+      setRecipient('');
+      setAmount('');
+      
+      if (onSuccess) {
+        onSuccess();
       }
 
-      // Get latest blockhash
-      const latestBlockhash = await connection.getLatestBlockhash();
-
-      // Create transaction
-      const message = new TransactionMessage({
-        payerKey: publicKey,
-        recentBlockhash: latestBlockhash.blockhash,
-        instructions,
-      }).compileToLegacyMessage();
-
-      const transaction = new VersionedTransaction(message);
-
-      // Send transaction
-      signature = await sendTransaction(transaction, connection);
-      await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed');
-      notify({ type: 'success', message: 'Send successful!', txid: signature });
-      setLastTxid(signature);
-      await getAllTokenBalances(publicKey, connection);
-      if (onSuccess) onSuccess();
-      setAmount('');
-      setRecipient('');
     } catch (error: any) {
-      notify({ type: 'error', message: 'Send failed!', description: error?.message, txid: signature });
+      notify({ 
+        type: 'error', 
+        message: `Send failed!`, 
+        description: error?.message, 
+        txid: signature 
+      });
       setLastTxid(signature || null);
+      console.error('Send error:', error);
     } finally {
       setIsLoading(false);
     }
-  }, [publicKey, recipient, amount, tokenType, balances, connection, sendTransaction, getAllTokenBalances, onSuccess]);
+  }, [publicKey, recipient, amount, tokenType, balances, connection, sendTransaction, getAllTokenBalances, onSuccess, validateInputs, estimatedFee, networkConfiguration]);
+
+  const getSolscanUrl = (txid: string) => {
+    const network = networkConfiguration === 'mainnet-beta' ? '' : `?cluster=${networkConfiguration}`;
+    return `${SOLSCAN_CONFIG.baseUrl}/tx/${txid}${network}`;
+  };
 
   return (
-    <div className="max-w-md mx-auto bg-base-200 rounded-lg p-6 shadow-lg">
-      <h3 className="text-xl font-bold mb-4 text-center">Send Tokens</h3>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-md mx-auto glass rounded-xl p-6 border border-gray-600/50 shadow-2xl hover-lift neon-green"
+    >
+      <h3 className="text-xl font-bold mb-4 text-center bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent animate-gradient">
+        💸 Send Tokens
+      </h3>
       
       <div className="space-y-4">
         {/* Token Type Selection */}
@@ -166,11 +252,20 @@ export const SendToken: FC<SendTokenProps> = ({ onSuccess }) => {
             <option value="SOL">SOL</option>
             <option value="GOLD">GOLD</option>
           </select>
-        </div>
-
-        {/* Balance Display */}
-        <div className="text-sm text-gray-600">
-          Balance: {balances[tokenType].toFixed(6)} {tokenType}
+          <div className="flex justify-between text-sm text-gray-600 mt-1">
+            <span>Balance: {balances[tokenType].toFixed(6)} {tokenType}</span>
+            <button
+              onClick={() => {
+                const maxAmount = tokenType === 'SOL' 
+                  ? Math.max(0, (balances[tokenType] || 0) - estimatedFee)
+                  : balances[tokenType] || 0;
+                setAmount(maxAmount.toString());
+              }}
+              className="text-blue-600 hover:text-blue-800 text-xs"
+            >
+              MAX
+            </button>
+          </div>
         </div>
 
         {/* Recipient Address */}
@@ -201,7 +296,45 @@ export const SendToken: FC<SendTokenProps> = ({ onSuccess }) => {
             step="0.000001"
             min="0"
           />
+          {tokenType === 'SOL' && (
+            <div className="text-xs text-gray-500 mt-1">
+              Network fee: ~{estimatedFee} SOL
+            </div>
+          )}
         </div>
+
+        {/* Transaction Summary */}
+        {amount && parseFloat(amount) > 0 && (
+          <div className="bg-gray-100 rounded p-3">
+            <div className="text-sm text-gray-700 space-y-1">
+              <div className="flex justify-between">
+                <span>Amount:</span>
+                <span>{amount} {tokenType}</span>
+              </div>
+              {tokenType === 'SOL' && (
+                <div className="flex justify-between">
+                  <span>Network Fee:</span>
+                  <span>~{estimatedFee} SOL</span>
+                </div>
+              )}
+              <div className="flex justify-between font-semibold border-t border-gray-300 pt-1">
+                <span>Total:</span>
+                <span>
+                  {tokenType === 'SOL' 
+                    ? (parseFloat(amount) + estimatedFee).toFixed(6)
+                    : parseFloat(amount).toFixed(6)
+                  } {tokenType === 'SOL' ? 'SOL' : tokenType}
+                </span>
+              </div>
+              {DEVELOPER_CONFIG.enabled && (
+                <div className="flex justify-between text-yellow-600">
+                  <span>Mode:</span>
+                  <span>Demo/Simulation</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Send Button */}
         <motion.button
@@ -213,19 +346,87 @@ export const SendToken: FC<SendTokenProps> = ({ onSuccess }) => {
         >
           {isLoading ? 'Sending...' : `Send ${tokenType}`}
         </motion.button>
+        
         {lastTxid && (
           <div className="mt-4 text-center">
-            <a
-              href={`https://solscan.io/tx/${lastTxid}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-yellow-400 hover:text-yellow-300 underline text-sm"
-            >
-              View Transaction on Solscan
-            </a>
+            <div className="bg-green-900 bg-opacity-30 border border-green-500 p-3 rounded-lg">
+              <div className="text-green-300 text-sm mb-2 flex items-center justify-center gap-2">
+                <span>✅</span>
+                <span>Transaction Successful!</span>
+              </div>
+              <a
+                href={getSolscanUrl(lastTxid)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-yellow-400 hover:text-yellow-300 underline text-sm font-medium"
+              >
+                🔍 View on Solscan: {lastTxid.slice(0, 8)}...{lastTxid.slice(-8)}
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* Confirmation Modal */}
+        {showConfirmation && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Confirm Transaction</h3>
+              <div className="space-y-3 mb-6">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Token:</span>
+                  <span className="text-gray-900">{tokenType}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Amount:</span>
+                  <span className="text-gray-900">{amount} {tokenType}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">To:</span>
+                  <span className="text-gray-900 text-xs">
+                    {recipient.slice(0, 8)}...{recipient.slice(-8)}
+                  </span>
+                </div>
+                {tokenType === 'SOL' && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Network Fee:</span>
+                    <span className="text-gray-900">~{estimatedFee} SOL</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm font-semibold border-t border-gray-200 pt-2">
+                  <span className="text-gray-600">Total Cost:</span>
+                  <span className="text-gray-900">
+                    {tokenType === 'SOL' 
+                      ? (parseFloat(amount) + estimatedFee).toFixed(6)
+                      : parseFloat(amount).toFixed(6)
+                    } {tokenType === 'SOL' ? 'SOL' : tokenType}
+                  </span>
+                </div>
+                {DEVELOPER_CONFIG.enabled && (
+                  <div className="bg-yellow-100 border border-yellow-400 rounded p-2">
+                    <p className="text-yellow-800 text-xs">
+                      ⚠️ Developer Mode: This will simulate the transaction
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowConfirmation(false)}
+                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmSend}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
+                >
+                  Confirm Send
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
-}; 
+};

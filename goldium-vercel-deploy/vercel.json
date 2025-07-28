@@ -1,0 +1,40 @@
+{
+  "version": 2,
+  "name": "goldium-dapp",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_SOLANA_NETWORK": "mainnet-beta",
+    "NEXT_PUBLIC_RPC_ENDPOINT": "https://api.mainnet-beta.solana.com",
+    "NEXT_PUBLIC_JUPITER_API": "https://quote-api.jup.ag/v6"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
+}
