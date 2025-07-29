@@ -219,7 +219,15 @@ export default async function handler(
             return res.status(400).json({ success: false, error: 'Notification ID is required' });
           }
           // In a real app, update the notification in database
-          res.status(200).json({ success: true, data: { message: 'Notification marked as read' } });
+          res.status(200).json({ 
+            success: true, 
+            data: {
+              notifications: generateMockNotifications(address),
+              priceAlerts: generateMockPriceAlerts(address),
+              settings: generateMockSettings(address),
+              unreadCount: 0
+            }
+          });
           break;
 
         case 'createPriceAlert':
@@ -237,7 +245,15 @@ export default async function handler(
             isActive: true,
             createdAt: new Date().toISOString()
           };
-          res.status(201).json({ success: true, data: { alert: newAlert } });
+          res.status(201).json({ 
+            success: true, 
+            data: {
+              notifications: generateMockNotifications(address),
+              priceAlerts: [...generateMockPriceAlerts(address), newAlert],
+              settings: generateMockSettings(address),
+              unreadCount: generateMockNotifications(address).filter(n => !n.isRead).length
+            }
+          });
           break;
 
         case 'updateSettings':
@@ -245,7 +261,15 @@ export default async function handler(
             return res.status(400).json({ success: false, error: 'Settings data is required' });
           }
           // In a real app, update settings in database
-          res.status(200).json({ success: true, data: { message: 'Settings updated successfully' } });
+          res.status(200).json({ 
+            success: true, 
+            data: {
+              notifications: generateMockNotifications(address),
+              priceAlerts: generateMockPriceAlerts(address),
+              settings: generateMockSettings(address),
+              unreadCount: generateMockNotifications(address).filter(n => !n.isRead).length
+            }
+          });
           break;
 
         case 'deleteAlert':
@@ -253,7 +277,15 @@ export default async function handler(
             return res.status(400).json({ success: false, error: 'Alert ID is required' });
           }
           // In a real app, delete the alert from database
-          res.status(200).json({ success: true, data: { message: 'Alert deleted successfully' } });
+          res.status(200).json({ 
+            success: true, 
+            data: {
+              notifications: generateMockNotifications(address),
+              priceAlerts: generateMockPriceAlerts(address).filter(alert => alert.id !== notificationId),
+              settings: generateMockSettings(address),
+              unreadCount: generateMockNotifications(address).filter(n => !n.isRead).length
+            }
+          });
           break;
 
         default:

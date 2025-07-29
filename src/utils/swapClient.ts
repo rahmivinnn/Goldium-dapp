@@ -1,5 +1,6 @@
 import { Connection, PublicKey, TransactionSignature } from '@solana/web3.js';
 import { Program, AnchorProvider, web3, BN } from '@coral-xyz/anchor';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { SWAP_IDL } from '../idl/sol_gold_swap';
 import { TOKENS } from '../config/tokens';
 import { getAssociatedTokenAddress, createAssociatedTokenAccountInstruction } from '@solana/spl-token';
@@ -60,7 +61,7 @@ export class SwapClient {
         tokenBVault: tokenBVault[0],
         authority: this.provider.wallet.publicKey,
         systemProgram: web3.SystemProgram.programId,
-        tokenProgram: web3.TokenProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .rpc();
@@ -109,7 +110,7 @@ export class SwapClient {
         poolTokenAccountA: tokenAVault[0],
         poolTokenAccountB: tokenBVault[0],
         user: this.provider.wallet.publicKey,
-        tokenProgram: web3.TokenProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .rpc();
 
@@ -149,7 +150,7 @@ export class SwapClient {
         poolTokenAccountA: tokenAVault[0],
         poolTokenAccountB: tokenBVault[0],
         user: this.provider.wallet.publicKey,
-        tokenProgram: web3.TokenProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .rpc();
 

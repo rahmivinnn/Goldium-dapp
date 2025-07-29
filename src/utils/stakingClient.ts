@@ -1,5 +1,6 @@
 import { Connection, PublicKey, TransactionSignature } from '@solana/web3.js';
 import { Program, AnchorProvider, web3, BN } from '@coral-xyz/anchor';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { IDL } from '../idl/sol_gold_staking';
 import { TOKENS } from '../config/tokens';
 
@@ -57,7 +58,7 @@ export class StakingClient {
         rewardVault: rewardVaultPDA,
         authority: this.provider.wallet.publicKey,
         systemProgram: web3.SystemProgram.programId,
-        tokenProgram: web3.TokenProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
       .rpc();
@@ -104,7 +105,7 @@ export class StakingClient {
         rewardVault: rewardVaultPDA,
         userRewardAccount: userGoldAccount,
         user: this.provider.wallet.publicKey,
-        tokenProgram: web3.TokenProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .rpc();
 
@@ -196,4 +197,4 @@ export class StakingClient {
     const { getAssociatedTokenAddress } = await import('@solana/spl-token');
     return getAssociatedTokenAddress(mint, owner);
   }
-} 
+}

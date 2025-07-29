@@ -130,9 +130,8 @@ export const SwapToken: FC<SwapTokenProps> = ({ onSuccess }) => {
       
       // Get quote from smart contract
       const contractQuote = await swapClient.getSwapQuote(
-        fromMint,
-        toMint,
-        fromAmountLamports
+        fromAmountLamports,
+        fromToken
       );
       
       if (!contractQuote) {
@@ -141,11 +140,10 @@ export const SwapToken: FC<SwapTokenProps> = ({ onSuccess }) => {
       
       // Execute swap
       const signature = await swapClient.swap(
-        fromMint,
-        toMint,
         fromAmountLamports,
-        contractQuote.expectedOutput * (1 - slippage / 10000), // Apply slippage
-        publicKey
+        contractQuote.amountOut * (1 - slippage / 10000), // Apply slippage
+        fromToken,
+        toToken
       );
       
       notify({ 
@@ -250,7 +248,7 @@ export const SwapToken: FC<SwapTokenProps> = ({ onSuccess }) => {
       
       // Deserialize the transaction
       const swapTransactionBuf = Buffer.from(swapTransaction, 'base64');
-      const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
+      const transaction = VersionedTransaction.deserialize(new Uint8Array(swapTransactionBuf));
       
       // Send transaction
       signature = await sendTransaction(transaction, connection);

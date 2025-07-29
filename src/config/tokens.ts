@@ -97,8 +97,8 @@ export const SOLSCAN_CONFIG = {
   },
   // Helper function to get network-specific URLs
   getNetworkConfig: (network: keyof typeof NETWORKS) => {
-    const networkKey = network === 'mainnet-beta' ? 'mainnet-beta' : network;
-    return SOLSCAN_CONFIG.networks[networkKey] || SOLSCAN_CONFIG.networks['mainnet-beta'];
+    const networkValue = NETWORKS[network];
+    return SOLSCAN_CONFIG.networks[networkValue] || SOLSCAN_CONFIG.networks['mainnet-beta'];
   },
 };
 

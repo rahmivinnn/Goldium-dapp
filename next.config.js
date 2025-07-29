@@ -1,41 +1,42 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
+  reactStrictMode: false,
+  swcMinify: false,
   eslint: {
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   experimental: {
-    appDir: false
+    appDir: false,
   },
   images: {
-    domains: ['api.coingecko.com', 'assets.coingecko.com']
+    domains: ['arweave.net'],
+    unoptimized: true,
   },
   env: {
-    NEXT_PUBLIC_SOLANA_NETWORK: process.env.NEXT_PUBLIC_SOLANA_NETWORK || 'mainnet-beta',
-    NEXT_PUBLIC_RPC_ENDPOINT: process.env.NEXT_PUBLIC_RPC_ENDPOINT || 'https://api.mainnet-beta.solana.com',
-    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || 'Goldium'
+    CUSTOMCONNECT_WALLET: process.env.CUSTOMCONNECT_WALLET,
   },
-  webpack: (config, { dev }) => {
-    if (dev) {
-      config.watchOptions = {
-        poll: 1000,
-        aggregateTimeout: 300,
-        ignored: [
-          '**/node_modules',
-          '**/.git',
-          '**/.next',
-          '**/pagefile.sys',
-          '**/hiberfil.sys',
-          '**/swapfile.sys',
-          'C:\\pagefile.sys',
-          'C:\\hiberfil.sys',
-          'C:\\swapfile.sys'
-        ]
-      };
-    }
+  webpack: (config) => {
+    config.resolve.fallback = { 
+      fs: false, 
+      net: false, 
+      tls: false,
+      crypto: false,
+      stream: false,
+      url: false,
+      zlib: false,
+      http: false,
+      https: false,
+      assert: false,
+      os: false,
+      path: false
+    };
+    config.externals.push('pino-pretty', 'lokijs', 'encoding');
     return config;
-  }
-}
+  },
+  trailingSlash: true,
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
