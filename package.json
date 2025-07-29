@@ -34,7 +34,7 @@
     "@solana/web3.js": "^1.73.0",
     "@tailwindcss/typography": "^0.5.9",
     "bs58": "^5.0.0",
-    "daisyui": "^1.24.3",
+    "daisyui": "^5.0.49",
     "date-fns": "^2.29.3",
     "decimal.js": "^10.4.3",
     "framer-motion": "^12.23.9",
