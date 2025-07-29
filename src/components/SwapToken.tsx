@@ -180,11 +180,14 @@ export const SwapToken: FC<SwapTokenProps> = ({ onSuccess }) => {
       }
       
     } catch (error: any) {
+      const errorSignature = error?.signature || null;
       notify({ 
         type: 'error', 
         message: 'Smart Contract Swap failed!',
-        description: error?.message || 'Unknown error occurred'
+        description: error?.message || 'Unknown error occurred',
+        txid: errorSignature
       });
+      setLastTxid(errorSignature);
       console.error('Smart Contract Swap error:', error);
     } finally {
       setIsLoading(false);

@@ -22,15 +22,18 @@ export const BalanceTracker: FC<BalanceTrackerProps> = ({
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [priceData, setPriceData] = useState<{ SOL: number; GOLD: number }>({ SOL: 0, GOLD: 0 });
 
-  // Fetch price data (mock implementation - replace with real price API)
+  // Fetch real price data from market API
   const fetchPriceData = useCallback(async () => {
     try {
-      // Mock price data - in production, integrate with CoinGecko, Jupiter, or other price APIs
-      const mockPrices = {
-        SOL: 100 + Math.random() * 20, // Mock SOL price around $100-120
-        GOLD: 0.1 + Math.random() * 0.05, // Mock GOLD price around $0.10-0.15
-      };
-      setPriceData(mockPrices);
+      const response = await fetch('/api/market/prices');
+      const data = await response.json();
+      
+      if (data.success && data.data?.prices) {
+        const priceMap: { [key: string]: number } = {};
+        data.data.prices.forEach((price: any) => {
+          priceMap[price.symbol] = price.price;
+        });
+        setPriceData(priceMap);
     } catch (error) {
       console.error('Error fetching price data:', error);
     }
